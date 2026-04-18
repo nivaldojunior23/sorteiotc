@@ -213,9 +213,9 @@ function App() {
           </h1>
         </div>
 
-        {/* Main Box - Uma única linha sem quebra */}
+        {/* Main Box - Adapta para mobile para mostrar todos os campos */}
         <div className="glass-card mb-8">
-          <div className="flex flex-nowrap items-center whitespace-nowrap overflow-x-auto scrollbar-hide w-full gap-2 md:gap-4 text-lg md:text-2xl font-medium tracking-tight text-text-main py-1">
+          <div className="flex flex-wrap items-center justify-center w-full gap-x-2 gap-y-4 md:gap-4 text-lg md:text-2xl font-medium tracking-tight text-text-main py-1 text-center">
             <span>Sortear</span>
             
             <input 
