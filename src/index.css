@@ -4,17 +4,23 @@
 
 :root {
   --app-bg: #f8fafc;
-  --app-bg-card: #ffffff;
-  --app-text: #0f172a;
-  --app-text-muted: #64748b;
-  --app-border: rgba(0, 0, 0, 0.1);
-  --app-input-bg: #e2e8f0;
-  --app-logo-filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); 
-  --app-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --app-switch-bg: #cbd5e1;
+  --app-bg-card: rgba(255, 255, 255, 0.8);
+  --app-text: #334155;
+  --app-text-muted: #94a3b8;
+  --app-border: rgba(0, 0, 0, 0.04);
+  --app-input-bg: rgba(241, 245, 249, 0.5);
+  --app-logo-filter: drop-shadow(0 2px 8px rgba(0,0,0,0.05)); 
+  --app-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04), 0 4px 10px -4px rgba(0, 0, 0, 0.02);
+  --app-switch-bg: #e2e8f0;
   --app-switch-handle: #ffffff;
-  --app-switch-border: rgba(0,0,0,0.2);
-  --app-input-text: #2e69ff; /* blue on light mode */
+  --app-switch-border: rgba(0,0,0,0.05);
+  --app-input-text: #1e293b;
+  
+  --color-1: 223 100% 59%;
+  --color-2: 176 100% 30%;
+  --color-3: 144 99% 64%;
+  --color-4: 176 100% 30%;
+  --color-5: 223 100% 59%;
 }
 
 .dark {
@@ -30,6 +36,12 @@
   --app-switch-handle: #d1d5db;
   --app-switch-border: transparent;
   --app-input-text: #46fe91; /* green on dark mode */
+
+  --color-1: 223 100% 59%;
+  --color-2: 176 100% 30%;
+  --color-3: 144 99% 64%;
+  --color-4: 176 100% 30%;
+  --color-5: 223 100% 59%;
 }
 
 @theme {
@@ -111,4 +123,42 @@
     -webkit-appearance: none;
     margin: 0;
   }
+}
+
+@keyframes slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+@keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+  }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+  }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+  }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+  }
+}
+.animate-slide {
+  animation: slide var(--speed) ease-in-out infinite alternate;
+}
+.animate-spin-around {
+  animation: spin-around calc(var(--speed) * 2) infinite linear;
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 200%;
+  }
+}
+.animate-rainbow {
+  animation: rainbow 2s linear infinite;
 }

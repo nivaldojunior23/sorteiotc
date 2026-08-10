@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
-
+import { RainbowButton } from './components/ui/RainbowButton';
+import { NumberCard } from './components/ui/NumberCard';
+import { ToggleSwitch } from './components/ui/ToggleSwitch';
 const ThemeToggleButton = ({ theme, toggleTheme }: { theme: 'light' | 'dark', toggleTheme: () => void }) => (
   <button 
     onClick={toggleTheme}
@@ -125,22 +127,15 @@ function App() {
       return;
     }
 
-    // Animation effect
-    let count = 0;
-    const duration = 1500; // ms
-    const intervalTime = 60; 
-    const totalFrames = duration / intervalTime;
+    // Casino spin animation effect
+    const duration = 2500; // ms (longer spin for casino effect)
     
-    const interval = setInterval(() => {
-      const randomTemp = Array.from({ length: amount }, () => Math.floor(Math.random() * range) + min);
-      setDisplayedNumbers(randomTemp);
-      count++;
-      
-      if (count >= totalFrames) {
-        clearInterval(interval);
-        finishDraw(finalNumbers);
-      }
-    }, intervalTime);
+    // Pass final numbers to trigger the number cards (they will render in slot mode because isDrawing is true)
+    setDisplayedNumbers(finalNumbers);
+    
+    setTimeout(() => {
+      finishDraw(finalNumbers);
+    }, duration);
   };
 
   const resetForm = () => {
@@ -164,11 +159,9 @@ function App() {
             
             <h2 className="text-xl font-helvetica font-bold text-primary mb-6 tracking-wide uppercase">Resultado do Sorteio</h2>
             
-            <div className={`flex flex-wrap justify-center gap-4 md:gap-8 mb-12 transition-colors duration-300 ${isFlashed ? 'text-secondary dark:text-accent' : 'text-text-main'}`}>
+            <div className={`flex flex-wrap justify-center gap-4 md:gap-8 mb-12`}>
                {results.map((num, idx) => (
-                  <div key={idx} className={`flex items-center justify-center min-w-[100px] md:min-w-[160px] px-6 py-4 md:px-8 md:py-6 bg-bg-card border rounded-2xl md:rounded-3xl text-7xl md:text-9xl font-helvetica font-bold transition-all duration-300 ease-out ${isFlashed ? 'scale-110 border-accent/50 dark:border-accent shadow-[0_0_30px_rgba(70,254,145,0.3)] bg-accent/5 border-2' : 'scale-100 border-border-card shadow-lg'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    {num}
-                  </div>
+                  <NumberCard key={idx} number={num} isFlashed={isFlashed} />
                ))}
             </div>
 
@@ -188,13 +181,16 @@ function App() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
          <ThemeToggleButton theme={theme} toggleTheme={toggleTheme} />
-         <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-primary w-full max-w-5xl">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 w-full max-w-5xl">
             {displayedNumbers.map((num, idx) => (
-               <div key={idx} className="flex items-center justify-center min-w-[100px] md:min-w-[160px] px-6 py-4 md:px-8 md:py-6 bg-bg-card/40 border border-border-card/50 rounded-2xl md:rounded-3xl text-7xl md:text-9xl font-helvetica font-bold opacity-60 transition-all duration-75" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                 {num}
-               </div>
+               <NumberCard 
+                 key={idx} 
+                 number={num} 
+                 isDrawing={true} 
+                 className="shadow-[inset_0_0_40px_rgba(0,0,0,0.3)] dark:shadow-[inset_0_0_40px_rgba(0,0,0,0.8)] border-border-card/50 opacity-90 scale-95" 
+               />
             ))}
-         </div>
+          </div>
       </div>
     )
   }
@@ -214,34 +210,43 @@ function App() {
         </div>
 
         {/* Main Box - Adapta para mobile para mostrar todos os campos */}
-        <div className="glass-card mb-8">
-          <div className="flex flex-wrap items-center justify-center w-full gap-x-2 gap-y-4 md:gap-4 text-lg md:text-2xl font-medium tracking-tight text-text-main py-1 text-center">
-            <span>Sortear</span>
+        <div className="glass-card mb-10 relative overflow-hidden group">
+          {/* subtle background glow */}
+          <div className="absolute -inset-x-20 -top-20 bottom-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 dark:from-primary/10 dark:to-accent/10 opacity-40 dark:opacity-50 blur-3xl group-hover:opacity-80 dark:group-hover:opacity-100 transition-opacity duration-500" />
+          
+          <div className="relative flex flex-col md:flex-row flex-wrap items-center justify-center w-full gap-4 md:gap-6 text-lg md:text-2xl font-medium tracking-tight text-text-main py-2 text-center">
             
-            <input 
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
-              className="bg-bg-input text-text-input focus:text-primary font-bold w-[60px] md:w-[80px] h-12 md:h-14 rounded-full text-center outline-none focus:ring-2 focus:ring-primary/50 transition-all no-spinners flex-shrink-0"
-            />
+            <div className="flex items-center gap-3">
+              <span className="text-text-muted">Sortear</span>
+              <div className="relative">
+                <input 
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="bg-bg-input/60 backdrop-blur-sm border border-border-card text-text-input focus:text-primary font-bold w-[70px] md:w-[90px] h-14 md:h-16 rounded-2xl text-center outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all no-spinners shadow-inner"
+                />
+              </div>
+              <span className="text-text-muted">número{amount > 1 ? 's' : ''}</span>
+            </div>
             
-            <span>número{amount > 1 ? 's' : ''} entre</span>
+            <div className="hidden md:block w-px h-10 bg-border-card mx-2"></div>
             
-            <input 
-              type="number"
-              value={min}
-              onChange={(e) => setMin(parseInt(e.target.value) || 0)}
-              className="bg-bg-input text-text-input focus:text-primary font-bold w-[60px] md:w-[80px] h-12 md:h-14 rounded-full text-center outline-none focus:ring-2 focus:ring-primary/50 transition-all no-spinners flex-shrink-0"
-            />
-            
-            <span>e</span>
-            
-            <input 
-              type="number"
-              value={max}
-              onChange={(e) => setMax(parseInt(e.target.value) || 0)}
-              className="bg-bg-input text-text-input focus:text-primary font-bold w-[70px] md:w-[90px] h-12 md:h-14 rounded-full text-center outline-none focus:ring-2 focus:ring-primary/50 transition-all no-spinners flex-shrink-0"
-            />
+            <div className="flex items-center gap-3">
+              <span className="text-text-muted">entre</span>
+              <input 
+                type="number"
+                value={min}
+                onChange={(e) => setMin(parseInt(e.target.value) || 0)}
+                className="bg-bg-input/60 backdrop-blur-sm border border-border-card text-text-input focus:text-primary font-bold w-[70px] md:w-[90px] h-14 md:h-16 rounded-2xl text-center outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all no-spinners shadow-inner"
+              />
+              <span className="text-text-muted font-bold px-1">e</span>
+              <input 
+                type="number"
+                value={max}
+                onChange={(e) => setMax(parseInt(e.target.value) || 0)}
+                className="bg-bg-input/60 backdrop-blur-sm border border-border-card text-text-input focus:text-primary font-bold w-[80px] md:w-[100px] h-14 md:h-16 rounded-2xl text-center outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all no-spinners shadow-inner"
+              />
+            </div>
           </div>
         </div>
 
@@ -250,36 +255,20 @@ function App() {
           
           {/* Animação */}
           <div className="flex items-center flex-wrap gap-4">
-            <label className="flex items-center cursor-pointer select-none">
-              <div className="relative">
-                <input 
-                  type="checkbox" 
-                  className="sr-only" 
-                  checked={countdown} 
-                  onChange={() => setCountdown(!countdown)} 
-                />
-                <div className={`block w-12 h-6 rounded-full transition-colors border border-border-switch ${countdown ? 'bg-primary' : 'bg-bg-switch'}`}></div>
-                <div className={`absolute left-1 top-1 w-4 h-4 rounded-full transition-transform shadow-md bg-bg-switch-handle ${countdown ? 'transform translate-x-6' : ''}`}></div>
-              </div>
-              <span className="ml-4 text-base md:text-lg text-text-muted hover:text-text-main transition-colors">Animação contagem regressiva</span>
-            </label>
+            <ToggleSwitch 
+              checked={countdown}
+              onChange={setCountdown}
+              label="Animação contagem regressiva"
+            />
           </div>
 
           {/* Não Repetir */}
           <div className="flex items-center gap-4">
-            <label className="flex items-center cursor-pointer select-none">
-              <div className="relative">
-                <input 
-                  type="checkbox" 
-                  className="sr-only" 
-                  checked={noRepeat} 
-                  onChange={() => setNoRepeat(!noRepeat)} 
-                />
-                <div className={`block w-12 h-6 rounded-full transition-colors border border-border-switch ${noRepeat ? 'bg-primary' : 'bg-bg-switch'}`}></div>
-                <div className={`absolute left-1 top-1 w-4 h-4 rounded-full transition-transform shadow-md bg-bg-switch-handle ${noRepeat ? 'transform translate-x-6' : ''}`}></div>
-              </div>
-              <span className="ml-4 text-base md:text-lg text-text-muted hover:text-text-main transition-colors">Não repetir número</span>
-            </label>
+            <ToggleSwitch 
+              checked={noRepeat}
+              onChange={setNoRepeat}
+              label="Não repetir número"
+            />
           </div>
           
           {/* Mais ações */}
@@ -300,19 +289,16 @@ function App() {
 
         </div>
 
-        {/* Action Button Container ADCIN Style */}
-        <div className="glass-card shadow-2xl mt-4 border-t-2 border-t-primary/30">
-           <button 
-             onClick={handleDraw} 
-             disabled={isDrawing || min > max}
-             className="w-full btn-primary text-xl py-5 rounded-xl disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed group relative overflow-hidden flex items-center justify-center font-bold"
-           >
-             <span className="relative z-10 flex items-center">
-               Sortear 
-               <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path></svg>
-             </span>
-           </button>
-        </div>
+         <div className="mt-10 flex justify-center w-full">
+            <RainbowButton
+              onClick={handleDraw} 
+              disabled={isDrawing || min > max}
+              className="w-full max-w-lg h-20 text-2xl uppercase tracking-widest shadow-2xl hover:shadow-[0_0_40px_rgba(70,254,145,0.4)]"
+            >
+                Sortear
+                <svg className="w-8 h-8 ml-2 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path></svg>
+            </RainbowButton>
+         </div>
 
       </div>
 
