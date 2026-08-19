@@ -37,13 +37,3 @@ Para executar e desenvolver melhorias adicionais no código localmente:
    ```
 4. Navegue até o destino revelado no terminal (`http://localhost:5173/`).
 
-## 🧱 Como Gerar a Publicação
-
-Quando este projeto estiver pronto para ser colocado no ar ("deployado" via Netlify/Vercel/Cloudflare) utilize:
-```bash
-npm run build
-```
-O sistema unificará e enxugará a árvore inteira numa pequena pasta chamada **`dist`**. Envie apenas esta pasta para a internet.
-
----
-**Nota Dev:** *Certifique-se de que nenhum software apague seus botões e inputs ao dar git reset. Tudo já está salvo no seu rastreio local agora!*
